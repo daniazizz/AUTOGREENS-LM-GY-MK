@@ -98,7 +98,8 @@ GREENYARD_PRICE_COL = 6
 PRIJS_VERSHIL_COL = 7
 VP_COL = 8
 MARGE_COL = 9
-LAST_UPDATE_COL = 10
+LAST_UPDATE_COL_GY = 10
+LAST_UPDATE_COL_MC = 11
 
 # Load configuration
 config = get_autogreens_config()
@@ -229,11 +230,13 @@ def run_eos(username, password, sheet):
          scraped_data = data_element.text
          print(scraped_data)
          update_cell(sheet, i, GREENYARD_PRICE_COL, scraped_data)
-        #  ct = datetime.datetime.now()
-        #  update_cell(sheet, i, LAST_UPDATE_COL, str(ct))
+         ct = datetime.datetime.now()
+         update_cell(sheet, i, LAST_UPDATE_COL_GY, str(ct))
         except:
          print("Error")
          update_cell(sheet, i, GREENYARD_PRICE_COL, "Error")
+         ct = datetime.datetime.now()
+         update_cell(sheet, i, LAST_UPDATE_COL_MC, "Error")
          
         i+=1
 
@@ -372,7 +375,7 @@ def run_mc(username, password, sheet, shop_id):
          update_cell(sheet, i, MC_PRICE_COL, format_euro(scraped_data))
          
          ct = datetime.datetime.now()
-         update_cell(sheet, i, LAST_UPDATE_COL, str(ct))
+         update_cell(sheet, i, LAST_UPDATE_COL_MC, str(ct))
          
          # click close
          close_button = driver.find_element(By.XPATH, "/html/body/div[1]/div/div/div/div[1]/div[1]/div/p/i")
@@ -382,7 +385,7 @@ def run_mc(username, password, sheet, shop_id):
          print(e)
          print("Error")
          update_cell(sheet, i, MC_PRICE_COL, "Error")
-         update_cell(sheet, i, LAST_UPDATE_COL, "Error")
+         update_cell(sheet, i, LAST_UPDATE_COL_MC, "Error")
         
         i+=1
     
@@ -394,13 +397,13 @@ def run_mc(username, password, sheet, shop_id):
 def handler(event, context):
     # SHEET WITH NAME "MARKET" AND "EXPRESS"
     sheet_market = client.open('AUTOGREENS').get_worksheet(0)
-    sheet_express = client.open('AUTOGREENS').get_worksheet(1)
+    # sheet_express = client.open('AUTOGREENS').get_worksheet(1)
     run_eos(GY_USERNAME_MARKET, GY_PASSWORD_MARKET, sheet_market)
-    run_mc(MC_USERNAME_MARKET, MC_PASSWORD_MARKET, sheet_market, MC_SHOP_ID_MARKET)
+    # run_mc(MC_USERNAME_MARKET, MC_PASSWORD_MARKET, sheet_market, MC_SHOP_ID_MARKET)
     sheet_market.sort((PRIJS_VERSHIL_COL, 'des'))
-    run_eos(GY_USERNAME_EXPRESS, GY_PASSWORD_EXPRESS, sheet_express)
-    run_mc(MC_USERNAME_EXPRESS, MC_PASSWORD_EXPRESS, sheet_express, MC_SHOP_ID_EXPRESS)
-    sheet_express.sort((PRIJS_VERSHIL_COL, 'des'))
+    # run_eos(GY_USERNAME_EXPRESS, GY_PASSWORD_EXPRESS, sheet_express)
+    # run_mc(MC_USERNAME_EXPRESS, MC_PASSWORD_EXPRESS, sheet_express, MC_SHOP_ID_EXPRESS)
+    # sheet_express.sort((PRIJS_VERSHIL_COL, 'des'))
 
     return {
         "statusCode": 200,
